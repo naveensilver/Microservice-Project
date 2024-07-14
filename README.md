@@ -41,3 +41,192 @@ These microservices can be deployed on an EKS cluster, which provides a managed 
   - **AWS EKS**: The microservices are deployed on AWS EKS, a managed Kubernetes service, which orchestrates and manages the lifecycle of the containers.
 
 You can find more details in the [GitHub repository](https://github.com/naveensilver/Microservice-Project.git).
+
+#### Architecture
+
+**Phase 1: Infrastructure Setup**
+
+1. **Create a User in AWS IAM**: Create a new user with any name.
+2. **Attach Policies**: Attach the following policies to the newly created user:
+   - AmazonEC2FullAccess
+   - AmazonEKS_CNI_Policy
+   - AmazonEKSClusterPolicy
+   - AmazonEKSWorkerNodePolicy
+   - AWSCloudFormationFullAccess
+   - IAMFullAccess
+3. **Create an Inline Policy**: Create an inline policy with the following content and attach it to your user:
+   ```json
+   {
+     "Version": "2012-10-17",
+     "Statement": [
+       {
+         "Sid": "VisualEditor0",
+         "Effect": "Allow",
+         "Action": "eks:*",
+         "Resource": "*"
+       }
+     ]
+   }
+   ```
+4. **Generate Secret Access Key**: Once the IAM user is created, generate its Secret Access Key and download the `credentials.csv` file.
+
+**Phase 2: Launch Virtual Machine Using AWS EC2**
+
+1. **EC2 Instance Requirements and Setup**:
+   - **Instance Type**: `t2.large`
+     - vCPUs: 2
+     - Memory: 8 GB
+     - Network Performance: Moderate
+   - **Amazon Machine Image (AMI)**: Ubuntu Server 20.04 LTS (Focal Fossa)
+   - **Security Groups**: Security groups act as a virtual firewall for your instance to control inbound and outbound traffic.
+
+2. **SSH into the Server**: After launching your virtual machine, SSH into the server.
+
+**Phase 3: Install AWS CLI, EKSCTL & KUBECTL on VM Server**
+
+1. **AWS CLI**:
+   ```sh
+   curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+   sudo apt install unzip
+   unzip awscliv2.zip
+   sudo ./aws/install
+   ```
+
+2. **KUBECTL**:
+   ```sh
+   curl -o kubectl https://amazon-eks.s3.us-west-2.amazonaws.com/1.19.6/2021-01-05/bin/linux/amd64/kubectl
+   chmod +x ./kubectl
+   sudo mv ./kubectl /usr/local/bin
+   kubectl version --short --client
+   ```
+
+3. **EKSCTL**:
+   ```sh
+   curl --silent --location "https://github.com/weaveworks/eksctl/releases/latest/download/eksctl_$(uname -s)_amd64.tar.gz" | tar xz -C /tmp
+   sudo mv /tmp/eksctl /usr/local/bin
+   eksctl version
+   ```
+
+4. **Save All Scripts**: Save all the scripts in a file, for example, `ctl.sh`, and make it executable using:
+   ```sh
+   chmod +x ctl.sh
+   ```
+
+5. **Run the Script**:
+   ```sh
+   ./ctl.sh
+   ```
+
+#### AWS Configure Steps
+
+To configure AWS CLI, use the following command:
+```sh
+aws configure
+```
+This command will prompt you to enter your AWS Access Key ID, Secret Access Key, region, and output format. This setup allows the AWS CLI to interact with your AWS account.
+
+Would you like more details on any specific part of this setup?
+
+### Installing Java, Jenkins, and Docker on Ubuntu
+
+Execute these commands on the Jenkins server:
+
+1. **Install OpenJDK 17 JRE Headless**:
+   ```sh
+   sudo apt install openjdk-17-jre-headless -y
+   ```
+
+2. **Download Jenkins GPG Key**:
+   ```sh
+   sudo wget -O /usr/share/keyrings/jenkins-keyring.asc https://pkg.jenkins.io/debian-stable/jenkins.io-2023.key
+   ```
+
+3. **Add Jenkins Repository to Package Manager Sources**:
+   ```sh
+   echo deb [signed-by=/usr/share/keyrings/jenkins-keyring.asc] https://pkg.jenkins.io/debian-stable binary/ | sudo tee /etc/apt/sources.list.d/jenkins.list > /dev/null
+   ```
+
+4. **Update Package Manager Repositories**:
+   ```sh
+   sudo apt-get update
+   ```
+
+5. **Install Jenkins**:
+   ```sh
+   sudo apt-get install jenkins -y
+   ```
+
+Save this script in a file, for example, `install_jenkins.sh`, and make it executable using:
+```sh
+chmod +x install_jenkins.sh
+```
+
+Then, you can run the script using:
+```sh
+./install_jenkins.sh
+```
+
+This script will automate the installation process of OpenJDK 17 JRE Headless and Jenkins.
+
+#### Install Docker
+
+To install Docker, follow these steps:
+
+1. **Update the Package List**:
+   ```sh
+   sudo apt-get update
+   ```
+
+2. **Install Required Packages**:
+   ```sh
+   sudo apt-get install apt-transport-https ca-certificates curl software-properties-common -y
+   ```
+
+3. **Add Docker’s Official GPG Key**:
+   ```sh
+   curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+   ```
+
+4. **Add Docker Repository**:
+   ```sh
+   sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
+   ```
+
+5. **Update the Package List Again**:
+   ```sh
+   sudo apt-get update
+   ```
+
+6. **Install Docker**:
+   ```sh
+   sudo apt-get install docker-ce -y
+   ```
+
+7. **Verify Docker Installation**:
+   ```sh
+   sudo systemctl status docker
+   ```
+
+### Creating an EKS Cluster
+
+To set up an EKS cluster, follow these steps:
+
+1. **Create the EKS Cluster**:
+   ```sh
+   eksctl create cluster --name=<EKS-2> --region=ap-south-1 --zones=ap-south-1a,ap-south-1b --without-nodegroup
+   ```
+
+2. **Associate IAM OIDC Provider**:
+   ```sh
+   eksctl utils associate-iam-oidc-provider --region ap-south-1 --cluster <EKS-2> --approve
+   ```
+
+3. **Create a Node Group**:
+   ```sh
+   eksctl create nodegroup --cluster=<EKS-2> --region=ap-south-1 --name=node2 --node-type=t3.medium --nodes=3 --nodes-min=2 --nodes-max=4 --node-volume-size=20 --ssh-access --ssh-public-key=<MyKeyPair> --managed --asg-access --external-dns-access --full-ecr-access --appmesh-access --alb-ingress-access
+   ```
+
+**Note**: Make sure to replace the cluster name, region, zones, and SSH public key with your specific details.
+
+
+
