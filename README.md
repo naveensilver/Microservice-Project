@@ -70,7 +70,7 @@ You can find more details in the [GitHub repository](https://github.com/naveensi
    ```
 4. **Generate Secret Access Key**: Once the IAM user is created, generate its Secret Access Key and download the `credentials.csv` file.
 
-**Phase 2: Launch Virtual Machine Using AWS EC2**
+**Launch Virtual Machine Using AWS EC2**
 
 1. **EC2 Instance Requirements and Setup**:
    - **Instance Type**: `t2.large`
@@ -82,7 +82,7 @@ You can find more details in the [GitHub repository](https://github.com/naveensi
 
 2. **SSH into the Server**: After launching your virtual machine, SSH into the server.
 
-**Phase 3: Install AWS CLI, EKSCTL & KUBECTL on VM Server**
+**Install AWS CLI, EKSCTL & KUBECTL on VM Server**
 
 1. **AWS CLI**:
    ```sh
