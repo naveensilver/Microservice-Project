@@ -460,7 +460,7 @@ Here, You will see the Service Account Token. Save the token for later use and T
 
 ### Configure Jenkins to use the secret token for authenticating with your Kubernetes cluster
 
-##### Jenkins Configuration Steps
+#### Jenkins Configuration Steps
 
 1. **Install the Kubernetes Plugin**:
    - Go to **Manage Jenkins** > **Manage Plugins**.
@@ -494,7 +494,7 @@ Here, You will see the Service Account Token. Save the token for later use and T
      }
      ```
 
-#### Explanation of Server URL
+### Explanation of Server URL
 
 The **serverURL** is the endpoint of your Kubernetes API server. This is the address Jenkins will use to communicate with your Kubernetes cluster. You can find this URL in your AWS EKS cluster details. Here’s how to get it:
 
@@ -509,6 +509,79 @@ The **serverURL** is the endpoint of your Kubernetes API server. This is the add
      aws eks describe-cluster --name <cluster-name> --query "cluster.endpoint" --output text
      ```
 This setup ensures that Jenkins uses the specified token to authenticate with the Kubernetes API server securely. 
+
+### Create A Jenkinfile on Main Branch
+
+Here’s the Jenkinsfile with the provided script for deploying to Kubernetes and verifying the deployment. This file should be placed in the main branch, which is your deployment branch
+
+```
+pipeline { 
+    agent any 
+    stages { 
+        stage('Deploy To Kubernetes') { 
+            steps { 
+                withKubeCredentials(kubectlCredentials: [[
+                    caCertificate: '', 
+                    clusterName: 'EKS-1', 
+                    contextName: '', 
+                    credentialsId: 'k8-token', 
+                    namespace: 'webapps', 
+                    serverUrl: 'https://B7C7C20487B2624AAB0AD54DF1469566.yl4.ap-south-1.eks.amazonaws.com'
+                ]]) { 
+                    sh "kubectl apply -f deployment-service.yml" 
+                } 
+            } 
+        } 
+        stage('Verify Deployment') { 
+            steps { 
+                withKubeCredentials(kubectlCredentials: [[
+                    caCertificate: '', 
+                    clusterName: 'EKS-1', 
+                    contextName: '', 
+                    credentialsId: 'k8-token', 
+                    namespace: 'webapps', 
+                    serverUrl: 'https://B7C7C20487B2624AAB0AD54DF1469566.yl4.ap-south-1.eks.amazonaws.com'
+                ]]) { 
+                    sh "kubectl get svc -n webapps" 
+                } 
+            } 
+        } 
+    } 
+}
+
+```
+
+Once you commit this file to the main branch, your pipeline will automatically start the build and deployment process.
+
+### Results:
+
+**Pipeline**
+
+**Application**
+
+**Console Output**
+
+**Main Branch Pipeline**
+
+**EKS Cluster**
+
+### Project Impact
+
+The implementation of the 10 Microservice CI/CD Pipeline project provides several significant benefits:
+
+1. **Improved Efficiency**: Automation of the build and deployment process reduces the time and effort required for manual deployments, leading to faster delivery cycles.
+2. **Enhanced Reliability**: Automated testing and deployment help in identifying and resolving issues early, improving the overall reliability and quality of the application.
+3. **Scalability**: The microservices architecture and Kubernetes orchestration enable the application to handle varying loads efficiently, ensuring consistent performance and availability.
+4. **Maintainability**: Independent development and deployment of services simplify maintenance and updates, reducing the complexity and risk of making changes.
+
+### Acknowledgment
+
+Special thanks to Aditya Jaiswal of "DevOps Shack" on YouTube for his invaluable guidance and tutorials, which were instrumental in the successful completion of this project. Thank you, Aditya!
+
+### Conclusion
+
+The successful deployment of the e-commerce website using a microservices architecture and an automated CI/CD pipeline on AWS EKS exemplifies the advantages of modern software development practices. This project not only achieves the goals of scalability, reliability, and efficiency but also sets a strong foundation for future enhancements and growth. The methodologies and technologies employed in this project can serve as a blueprint for similar projects aiming to leverage microservices and CI/CD pipelines for continuous innovation and delivery.
+
 
 
 
