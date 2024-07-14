@@ -213,20 +213,43 @@ To set up an EKS cluster, follow these steps:
 
 1. **Create the EKS Cluster**:
    ```sh
-   eksctl create cluster --name=<EKS-2> --region=ap-south-1 --zones=ap-south-1a,ap-south-1b --without-nodegroup
+   eksctl create cluster --name=EKS-1 --region=ap-south-1 --zones=ap-south-1a,ap-south-1b --without-nodegroup
    ```
+   - **--name**: Specifies the name of the cluster.
+   - **--region**: Defines the AWS region where the cluster will be created.
+   - **--zones**: Lists the availability zones within the region.
+   - **--without-nodegroup**: Creates the cluster without any node groups initially.
 
 2. **Associate IAM OIDC Provider**:
    ```sh
-   eksctl utils associate-iam-oidc-provider --region ap-south-1 --cluster <EKS-2> --approve
+   eksctl utils associate-iam-oidc-provider --region ap-south-1 --cluster EKS-1 --approve
    ```
+   - This command associates an OpenID Connect (OIDC) provider with your EKS cluster, which is necessary for IAM roles for service accounts.
 
 3. **Create a Node Group**:
    ```sh
-   eksctl create nodegroup --cluster=<EKS-2> --region=ap-south-1 --name=node2 --node-type=t3.medium --nodes=3 --nodes-min=2 --nodes-max=4 --node-volume-size=20 --ssh-access --ssh-public-key=<MyKeyPair> --managed --asg-access --external-dns-access --full-ecr-access --appmesh-access --alb-ingress-access
+   eksctl create nodegroup --cluster=EKS-1 --region=ap-south-1 --name=node2 --node-type=t3.medium --nodes=3 --nodes-min=2 --nodes-max=4 --node-volume-size=20 --ssh-access --ssh-public-key=DevOps --managed --asg-access --external-dns-access --full-ecr-access --appmesh-access --alb-ingress-access
    ```
+   - **--cluster**: Specifies the name of the cluster to which the node group will be added.
+   - **--region**: Defines the AWS region where the node group will be created.
+   - **--name**: Names the node group.
+   - **--node-type**: Specifies the instance type for the nodes.
+   - **--nodes**: Sets the initial number of nodes.
+   - **--nodes-min**: Sets the minimum number of nodes.
+   - **--nodes-max**: Sets the maximum number of nodes.
+   - **--node-volume-size**: Defines the size of the EBS volumes attached to each node.
+   - **--ssh-access**: Enables SSH access to the nodes.
+   - **--ssh-public-key**: Specifies the SSH public key to use for SSH access.
+   - **--managed**: Indicates that the node group is managed by EKS.
+   - **--asg-access**: Grants access to the Auto Scaling Group.
+   - **--external-dns-access**: Grants access to external DNS.
+   - **--full-ecr-access**: Grants full access to Amazon ECR.
+   - **--appmesh-access**: Grants access to AWS App Mesh.
+   - **--alb-ingress-access**: Grants access to the ALB Ingress Controller.
 
 **Note**: Make sure to replace the cluster name, region, zones, and SSH public key with your specific details.
+
+
 
 
 
