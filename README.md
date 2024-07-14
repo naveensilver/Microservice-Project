@@ -348,4 +348,116 @@ You need to create credentials for Docker and GitHub access.
 
 After completing these steps, your Jenkins multi-branch pipeline will start building automatically.
 
-Would you like more details on any specific part of this setup?
+### Phase 3: Continuous Deployment
+
+Run these commands on the server to create a Service Account, Role, and Role Binding, and to generate a token for the Service Account. This setup will allow you to deploy your application on the main branch.
+
+- Create a namespace for isolation:
+  ```sh
+  kubectl create namespace webapps
+  ```
+#### Service Account
+  
+A **Service Account** in Kubernetes is used to provide an identity for processes that run in a Pod. This identity allows the processes to interact with the Kubernetes API server. Service accounts are typically used for applications running within the cluster that need to communicate with the Kubernetes API.
+
+1. **Create a Service Account**:
+   - Create a file named `svc.yml` with the following content:
+     ```yaml
+     apiVersion: v1
+     kind: ServiceAccount
+     metadata:
+       name: jenkins
+       namespace: webapps
+     ```
+   - Apply the configuration:
+     ```sh
+     kubectl apply -f svc.yml
+     ```
+
+2. **Create a Role**:
+
+#### Role
+
+A **Role** in Kubernetes defines a set of permissions within a specific namespace. It specifies what actions can be performed on which resources. Roles are used to grant access to resources like Pods, Services, and ConfigMaps within a namespace.
+
+   - Create a file named `role.yml` with the following content:
+     ```yaml
+     apiVersion: rbac.authorization.k8s.io/v1
+     kind: Role
+     metadata:
+       name: app-role
+       namespace: webapps
+     rules:
+     - apiGroups: ["", "apps", "autoscaling", "batch", "extensions", "policy", "rbac.authorization.k8s.io"]
+       resources: ["pods", "componentstatuses", "configmaps", "daemonsets", "deployments", "events", "endpoints", "horizontalpodautoscalers", "ingress", "jobs", "limitranges", "namespaces", "nodes", "persistentvolumes", "persistentvolumeclaims", "resourcequotas", "replicasets", "replicationcontrollers", "serviceaccounts", "services"]
+       verbs: ["get", "list", "watch", "create", "update", "patch", "delete"]
+     ```
+   - Apply the configuration:
+     ```sh
+     kubectl apply -f role.yml
+     ```
+
+3. **Bind the Role to the Service Account**:
+
+#### Role Binding
+
+A **Role Binding** grants the permissions defined in a Role to a user or a set of users, including service accounts. It binds the Role to the Service Account, allowing the Service Account to perform the actions specified in the Role. 
+
+   - Create a file named `bind.yml` with the following content:
+     ```yaml
+     apiVersion: rbac.authorization.k8s.io/v1
+     kind: RoleBinding
+     metadata:
+       name: app-rolebinding
+       namespace: webapps
+     roleRef:
+       apiGroup: rbac.authorization.k8s.io
+       kind: Role
+       name: app-role
+     subjects:
+     - kind: ServiceAccount
+       name: jenkins
+       namespace: webapps
+     ```
+   - Apply the configuration:
+     ```sh
+     kubectl apply -f bind.yml
+     ```
+
+### Creating a Secret Token for the Service Account
+
+To create a secret token for the Service Account, follow these steps:
+
+1. **Create a Secret**:
+   - Create a file named `secret.yml` with the following content:
+     ```yaml
+     apiVersion: v1
+     kind: Secret
+     metadata:
+       name: jenkins-token
+       namespace: webapps
+     type: kubernetes.io/service-account-token
+     annotations:
+       kubernetes.io/service-account.name: "jenkins"
+     ```
+   - Apply the configuration:
+     ```sh
+     kubectl apply -f secret.yml
+     ```
+
+2. **Retrieve the Token**:
+   - Get the name of the secret created for the service account:
+     ```sh
+     kubectl get secrets -n webapps
+     ```
+   - Describe the secret to retrieve the token:
+     ```sh
+     kubectl describe secret <secret-name> -n webapps
+     ```
+
+Here, You will see the Service Account Token. Save the token for later use and This token can be used by Jenkins to authenticate with the Kubernetes API server.
+
+
+
+
+
