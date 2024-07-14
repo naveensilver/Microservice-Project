@@ -1,8 +1,10 @@
+## E-Commerce Website 
+
+### E-Commerce Website Using 10 Microservices on EKS Cluster
+
 ### Why Microservices?
 
 Microservices is an architectural style where an application is built as a collection of small, independent services. Each service focuses on a specific business function and operates on its own. These services communicate with each other through well-defined APIs, making the system more modular and easier to manage.
-
-### E-Commerce Website Using 10 Microservices on EKS Cluster
 
 #### Project Overview
 
