@@ -145,8 +145,6 @@ aws configure
 ```
 This command will prompt you to enter your AWS Access Key ID, Secret Access Key, region, and output format. This setup allows the AWS CLI to interact with your AWS account.
 
-Would you like more details on any specific part of this setup?
-
 ### Installing Java, Jenkins, and Docker on Ubuntu
 
 Execute these commands on the Jenkins server:
@@ -233,7 +231,7 @@ To set up an EKS cluster, follow these steps:
 
 1. **Create the EKS Cluster**:
    ```sh
-   eksctl create cluster --name=EKS-1 --region=ap-south-1 --zones=ap-south-1a,ap-south-1b --without-nodegroup
+   eksctl create cluster --name=EKS-2 --region=ap-south-1 --zones=ap-south-1a,ap-south-1b --without-nodegroup
    ```
    - **--name**: Specifies the name of the cluster.
    - **--region**: Defines the AWS region where the cluster will be created.
@@ -242,13 +240,13 @@ To set up an EKS cluster, follow these steps:
 
 2. **Associate IAM OIDC Provider**:
    ```sh
-   eksctl utils associate-iam-oidc-provider --region ap-south-1 --cluster EKS-1 --approve
+   eksctl utils associate-iam-oidc-provider --region ap-south-1 --cluster EKS-2 --approve
    ```
    - This command associates an OpenID Connect (OIDC) provider with your EKS cluster, which is necessary for IAM roles for service accounts.
 
 3. **Create a Node Group**:
    ```sh
-   eksctl create nodegroup --cluster=EKS-1 --region=ap-south-1 --name=node2 --node-type=t3.medium --nodes=3 --nodes-min=2 --nodes-max=4 --node-volume-size=20 --ssh-access --ssh-public-key=DevOps --managed --asg-access --external-dns-access --full-ecr-access --appmesh-access --alb-ingress-access
+   eksctl create nodegroup --cluster=EKS-2 --region=ap-south-1 --name=node2 --node-type=t3.medium --nodes=3 --nodes-min=2 --nodes-max=4 --node-volume-size=20 --ssh-access --ssh-public-key=DevOps --managed --asg-access --external-dns-access --full-ecr-access --appmesh-access --alb-ingress-access
    ```
    - **--cluster**: Specifies the name of the cluster to which the node group will be added.
    - **--region**: Defines the AWS region where the node group will be created.
@@ -504,7 +502,7 @@ Here, You will see the Service Account Token. Save the token for later use and T
      ```groovy
      withKubeCredentials(kubectlCredentials: [[
        caCertificate: '', 
-       clusterName: 'EKS-1', 
+       clusterName: 'EKS-2', 
        contextName: '', 
        credentialsId: 'k8-token', 
        namespace: 'webapps', 
@@ -542,7 +540,7 @@ pipeline {
             steps { 
                 withKubeCredentials(kubectlCredentials: [[
                     caCertificate: '', 
-                    clusterName: 'EKS-1', 
+                    clusterName: 'EKS-2', 
                     contextName: '', 
                     credentialsId: 'k8-token', 
                     namespace: 'webapps', 
@@ -556,7 +554,7 @@ pipeline {
             steps { 
                 withKubeCredentials(kubectlCredentials: [[
                     caCertificate: '', 
-                    clusterName: 'EKS-1', 
+                    clusterName: 'EKS-2', 
                     contextName: '', 
                     credentialsId: 'k8-token', 
                     namespace: 'webapps', 
@@ -590,10 +588,10 @@ Once you commit this file to the main branch, your pipeline will automatically s
 To delete your EKS cluster and avoid any unnecessary billing, you can use the following command:
 
 ```sh
-eksctl delete cluster --name EKS-1 --region ap-south-1
+eksctl delete cluster --name EKS-2 --region ap-south-1
 ```
 
-This command will delete the EKS cluster named `EKS-1` in the `ap-south-1` region. However, remember to also delete any associated resources such as load balancers, EBS volumes, and other AWS resources that might not be automatically removed when the cluster is deleted. This will help ensure you don't incur unexpected charges.
+This command will delete the EKS cluster named `EKS-2` in the `ap-south-1` region. However, remember to also delete any associated resources such as load balancers, EBS volumes, and other AWS resources that might not be automatically removed when the cluster is deleted. This will help ensure you don't incur unexpected charges.
 
 ### Project Impact
 
