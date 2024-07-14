@@ -565,6 +565,16 @@ Once you commit this file to the main branch, your pipeline will automatically s
 
 **EKS Cluster**
 
+### Delete EKS Cluster 
+
+To delete your EKS cluster and avoid any unnecessary billing, you can use the following command:
+
+```sh
+eksctl delete cluster --name EKS-1 --region ap-south-1
+```
+
+This command will delete the EKS cluster named `EKS-1` in the `ap-south-1` region. However, remember to also delete any associated resources such as load balancers, EBS volumes, and other AWS resources that might not be automatically removed when the cluster is deleted. This will help ensure you don't incur unexpected charges.
+
 ### Project Impact
 
 The implementation of the 10 Microservice CI/CD Pipeline project provides several significant benefits:
