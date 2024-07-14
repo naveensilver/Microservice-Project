@@ -250,6 +250,102 @@ To set up an EKS cluster, follow these steps:
 **Note**: Make sure to replace the cluster name, region, zones, and SSH public key with your specific details.
 
 
+### Phase 2: Multi-branch Pipeline Setup
 
+#### Step 1: Install Jenkins Plugins
 
+To get started, you need to install the required Jenkins plugins. Follow these steps:
 
+1. **Access Jenkins Dashboard**:
+   - Open a web browser and navigate to your Jenkins instance (e.g., `http://your-instance-public-dns:8080`).
+   - Log in with your Jenkins credentials.
+
+2. **Install Plugins**:
+   - Go to **Manage Jenkins** > **Manage Plugins**.
+   - Click on the **Available** tab.
+   - Search for and install the following plugins:
+     - **Docker**: Enables Jenkins to use Docker containers.
+     - **Docker Pipeline**: Allows Jenkins to use Docker containers in pipeline jobs.
+     - **Kubernetes**: Provides support for Kubernetes in Jenkins.
+     - **Kubernetes CLI**: Allows Jenkins to interact with Kubernetes clusters.
+     - **Multibranch Scan Webhook Trigger**: Adds webhook trigger functionality for multibranch projects.
+
+3. **Configure Docker Tool**:
+   - After installing the Docker plugin, configure the Docker tool in Jenkins:
+     - Go to **Manage Jenkins** > **Global Tool Configuration**.
+     - Under **Docker**, set the tool name to `docker` (same as in the Jenkinsfile) and the version to `latest`.
+
+4. **Add Docker Hub Credentials**:
+   - Go to **Manage Jenkins** > **Manage Credentials** > **(global)** > **Add Credentials**.
+   - Choose **Username with password** as the kind.
+   - Set the ID to `docker-cred`.
+   - Enter your Docker Hub username and password.
+   - Click **OK**.
+
+5. **Add GitHub Credentials**:
+   - Go to **Manage Jenkins** > **Manage Credentials** > **(global)** > **Add Credentials**.
+   - Choose **Secret text** as the kind.
+   - Set the ID to `git-cred`.
+   - Enter your GitHub Personal Access Token as the secret.
+   - Click **OK**.
+
+#### Step 2: Create Credentials
+
+You need to create credentials for Docker and GitHub access.
+
+1. **Create Docker Credentials**:
+   - Go to **Manage Jenkins** > **Manage Credentials** > **(global)** > **Add Credentials**.
+   - Choose **Username with password** as the kind.
+   - Set the ID to `docker-cred`.
+   - Enter your Docker Hub username and password.
+   - Click **OK**.
+
+2. **Create GitHub Credentials**:
+   - Go to **Manage Jenkins** > **Manage Credentials** > **(global)** > **Add Credentials**.
+   - Choose **Secret text** as the kind.
+   - Set the ID to `git-cred`.
+   - Enter your GitHub Personal Access Token as the secret.
+   - Click **OK**.
+
+#### Step 3: Configure Multibranch Pipeline
+
+1. **Create a New Multibranch Pipeline**:
+   - Go to **New Item**.
+   - Enter a name for your project (e.g., `microservice-pipeline`).
+   - Select **Multibranch Pipeline** and click **OK**.
+
+2. **Configure Branch Sources**:
+   - Under **Branch Sources**, click **Add source**.
+   - Choose **Git**.
+   - Enter the repository URL: `https://github.com/naveensilver/Microservice-Project.git`.
+   - Select the `git-cred` credentials.
+
+3. **Configure Build Configuration**:
+   - Under **Build Configuration**, ensure **by Jenkinsfile** is selected.
+   - Leave the **Script Path** as the default (`Jenkinsfile`).
+
+4. **Configure Webhook Trigger**:
+   - Under **Scan Repository Triggers**, click **Add**.
+   - Select **Multibranch Scan Webhook Trigger**.
+   - Enter a token name (e.g., `naveen`).
+   - Note the webhook URL: `http://your-jenkins-instance:8080/multibranch-webhook-trigger/invoke?token=naveen`.
+     - Replace `your-jenkins-instance` with the public DNS or IP address of your Jenkins instance.
+     - Replace `naveen` with the token name you provided.
+
+#### Step 4: Set Up GitHub Webhook
+
+1. **Go to GitHub Repository Settings**:
+   - Navigate to your repository on GitHub.
+   - Go to **Settings** > **Webhooks**.
+
+2. **Add Webhook**:
+   - Click **Add webhook**.
+   - **Payload URL**: Enter the webhook URL you noted earlier (e.g., `http://your-jenkins-instance:8080/multibranch-webhook-trigger/invoke?token=naveen`).
+   - **Content type**: Select `application/json`.
+   - **Secret**: Leave it blank.
+   - Select **Let me select individual events** and choose **Push events**.
+   - Click **Add webhook**.
+
+After completing these steps, your Jenkins multi-branch pipeline will start building automatically.
+
+Would you like more details on any specific part of this setup?
