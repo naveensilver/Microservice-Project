@@ -458,6 +458,59 @@ To create a secret token for the Service Account, follow these steps:
 Here, You will see the Service Account Token. Save the token for later use and This token can be used by Jenkins to authenticate with the Kubernetes API server.
 
 
+### Configure Jenkins to use the secret token for authenticating with your Kubernetes cluster
+
+##### Jenkins Configuration Steps
+
+1. **Install the Kubernetes Plugin**:
+   - Go to **Manage Jenkins** > **Manage Plugins**.
+   - In the **Available** tab, search for the **Kubernetes** plugin.
+   - Install the plugin and restart Jenkins if required.
+
+2. **Add the Token to Jenkins Credentials**:
+   - Go to **Manage Jenkins** > **Manage Credentials**.
+   - Select the appropriate domain (e.g., Global).
+   - Click **Add Credentials**.
+   - Choose **Secret text** as the kind.
+   - Enter the token in the **Secret** field and give it an **ID** (e.g., `k8-token`).
+   - Kubernates Endpoint API - You can find it in your AWS EKS cluster. 
+   - Cluster name- Provide any name. 
+   - NameSpace – webapps  
+
+3. **Configure Kubernetes in Jenkins**:
+   - Create a new Dummy Jenkins pipeline job for Generating Pipeline Script.
+   
+   - In the pipeline script, use the `withKubeCredentials` block to configure Kubernetes credentials:
+     ```groovy
+     withKubeCredentials(kubectlCredentials: [[
+       caCertificate: '', 
+       clusterName: 'EKS-1', 
+       contextName: '', 
+       credentialsId: 'k8-token', 
+       namespace: 'webapps', 
+       serverUrl: 'https://B7C7C20487B2624AAB0AD54DF1469566.yl4.ap-south-1.eks.amazonaws.com'
+     ]]) { 
+       // Your pipeline code here
+     }
+     ```
+
+#### Explanation of Server URL
+
+The **serverURL** is the endpoint of your Kubernetes API server. This is the address Jenkins will use to communicate with your Kubernetes cluster. You can find this URL in your AWS EKS cluster details. Here’s how to get it:
+
+1. **AWS Management Console**:
+   - Go to the **EKS** section in the AWS Management Console.
+   - Select your cluster.
+   - In the **Cluster** details, you will find the **API server endpoint**. This is the URL you need.
+
+2. **AWS CLI**:
+   - You can also retrieve the server URL using the AWS CLI:
+     ```sh
+     aws eks describe-cluster --name <cluster-name> --query "cluster.endpoint" --output text
+     ```
+This setup ensures that Jenkins uses the specified token to authenticate with the Kubernetes API server securely. 
+
+
 
 
 
