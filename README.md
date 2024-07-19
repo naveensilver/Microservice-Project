@@ -579,13 +579,23 @@ Once you commit this file to the main branch, your pipeline will automatically s
 
 **Pipeline**
 
+![Screenshot 2024-07-14 192313](https://github.com/user-attachments/assets/88adf184-8588-4186-85dc-ba60e5fe2881)
+
 **Application**
+
+![Untitled video - Made with Clipchamp (1)](https://github.com/user-attachments/assets/67d1a33b-47c9-44af-bbcb-bba5c34b25c0)
 
 **Console Output**
 
+![Screenshot 2024-07-14 192133](https://github.com/user-attachments/assets/6bdee293-9661-4365-9aac-5ccd67982e21)
+
 **Main Branch Pipeline**
 
+![Screenshot 2024-07-14 192216](https://github.com/user-attachments/assets/63f7684e-7c45-43db-8692-2886750ebfe4)
+
 **EKS Cluster**
+
+![Screenshot 2024-07-14 192029](https://github.com/user-attachments/assets/4a649b0c-9381-41cd-b2df-7e12de726434)
 
 ### Delete EKS Cluster 
 
