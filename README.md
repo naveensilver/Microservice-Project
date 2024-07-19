@@ -1,10 +1,10 @@
-## E-Commerce Website 
+# E-Commerce Website 
 
 ![Untitled video - Made with Clipchamp (1)](https://github.com/user-attachments/assets/67d1a33b-47c9-44af-bbcb-bba5c34b25c0)
 
-### E-Commerce Website Using 10 Microservices on EKS Cluster
+## E-Commerce Website Using 10 Microservices on EKS Cluster
 
-#### Architecture
+### Architecture
 
 ![10 Microservices](https://github.com/user-attachments/assets/3a41fb69-1bd5-4a9a-b947-cbad24b0011e)
 
