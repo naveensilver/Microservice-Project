@@ -1,5 +1,7 @@
 ## E-Commerce Website 
 
+![Untitled video - Made with Clipchamp](https://github.com/user-attachments/assets/59e8f3f7-0554-4bda-92aa-c97d050248b0)
+
 ### E-Commerce Website Using 10 Microservices on EKS Cluster
 
 ### Why Microservices?
